@@ -1,7 +1,10 @@
 # Simple Kubernetes Operator
 
-* Server with grpc 
+*This project only for personal use and study so it is very simple and not professional*
 
+*I'm happy if you contribute to this repo*
+
+* Server with grpc
 
 ### Set environment
 
