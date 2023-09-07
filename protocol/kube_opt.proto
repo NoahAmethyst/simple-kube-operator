@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "kube_opt_pb/;kube_opt_pb";
+
+service KubeOptService {
+
+  rpc GetPods(KubeOptReq) returns (KubeOptResp){}
+
+  rpc GetServices(KubeOptReq) returns(KubeOptResp){}
+
+  rpc GetDeployments(KubeOptReq) returns(KubeOptResp){}
+
+  rpc DeletePod(KubeOptReq) returns(KubeOptResp){}
+
+}
+
+
+message KubeOptReq{
+  string namespace = 1;
+  string app = 2;
+  string podId = 3;
+}
+
+message KubeOptResp{
+  uint64 code = 1;
+  string message = 2;
+  repeated KubePod pods = 3;
+}
+
+message KubePod{
+  string namespace = 1;
+  string app = 2;
+  string podId = 3;
+  string status = 4;
+
+}
+
+
+
+
+
+
