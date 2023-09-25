@@ -6,6 +6,8 @@ option go_package = "kube_opt_pb/;kube_opt_pb";
 
 service KubeOptService {
 
+  rpc Namespaces(KubeOptReq) returns(KubeOptResp){}
+
   rpc GetPods(KubeOptReq) returns (KubeOptResp){}
 
   rpc GetServices(KubeOptReq) returns(KubeOptResp){}
@@ -27,6 +29,7 @@ message KubeOptResp{
   uint64 code = 1;
   string message = 2;
   repeated KubePod pods = 3;
+  repeated KubeNamespace namespaces = 4;
 }
 
 message KubePod{
@@ -34,7 +37,10 @@ message KubePod{
   string app = 2;
   string podId = 3;
   string status = 4;
+}
 
+message KubeNamespace{
+  string namespace = 1;
 }
 
 

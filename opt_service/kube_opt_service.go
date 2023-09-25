@@ -9,6 +9,19 @@ import (
 
 type KubeOptServer struct{}
 
+func (s KubeOptServer) Namespaces(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+	resp = new(kube_opt_pb.KubeOptResp)
+	if namespaces, err := operator.Namespaces(ctx); err != nil {
+		resp.Code = constant.Failed
+		resp.Message = err.Error()
+	} else {
+		for _, item := range namespaces.Items {
+			resp.Namespaces = append(resp.Namespaces, &kube_opt_pb.KubeNamespace{Namespace: item.Name})
+		}
+	}
+	return
+}
+
 func (s KubeOptServer) GetPods(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
 	resp = new(kube_opt_pb.KubeOptResp)
 	if len(req.Namespace) == 0 {

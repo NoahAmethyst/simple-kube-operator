@@ -1,9 +1,11 @@
 package operator
 
 import (
+	"context"
 	"github.com/NoahAmethyst/simple-kube-operator/constant"
 	"github.com/NoahAmethyst/simple-kube-operator/utils/log"
-
+	v13 "k8s.io/api/core/v1"
+	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"os"
@@ -23,6 +25,7 @@ func init() {
 	if len(configFile) == 0 {
 		configFile = "/etc/kubernetes/admin.conf"
 	}
+
 	cfg, err := clientcmd.BuildConfigFromFlags(os.Getenv(constant.K8sMasterUrl), configFile)
 	if err != nil {
 		log.Error().Msgf("Build Kubernetes config failed:%s", err.Error())
@@ -57,5 +60,14 @@ func ResetCli(masterUrl, configFile string, insecure bool) error {
 		KubeCli.Clientset = k8sClient
 	}
 	return nil
+}
+
+func Namespaces(ctx context.Context) (*v13.NamespaceList, error) {
+	if KubeCli.Err != nil {
+		log.Error().Msgf("Kubernetes client has error:%s", KubeCli.Err)
+		return nil, KubeCli.Err
+	}
+
+	return KubeCli.CoreV1().Namespaces().List(ctx, v12.ListOptions{})
 
 }
