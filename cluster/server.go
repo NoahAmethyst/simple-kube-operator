@@ -31,14 +31,10 @@ func StartServer(grpcPort string) {
 	grpcAddr := fmt.Sprintf("0.0.0.0:%s", grpcPort)
 	lis, err := net.Listen("tcp", grpcAddr)
 
-	if len(grpcPort) > 0 {
-		grpcPort = fmt.Sprintf("127.0.0.1:%s", grpcPort)
-	}
-
 	if err != nil {
 		log.Error().Fields(map[string]interface{}{"action": "grpc listener error", "error": err.Error()}).Send()
 	}
-	log.Info().Msgf("KubeOpt service start at port %s", grpcPort)
+	log.Info().Msgf("KubeOpt service start at address %s", grpcAddr)
 
 	// Define customfunc to handle panic
 	customFunc = func(ctx context.Context, p interface{}) error {
