@@ -12,7 +12,7 @@ COPY ./ .
 
 RUN go mod download
 
-RUN go build
+RUN go build -o kube-operator
 
 FROM alpine:3.17 AS app
 
