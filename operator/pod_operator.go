@@ -9,8 +9,8 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// GetPods Get pods information
-func GetPods(ctx context.Context, req *kube_opt_pb.KubeOptReq) (*v12.PodList, error) {
+// Pods Get pods information
+func Pods(ctx context.Context, req *kube_opt_pb.KubeOptReq) (*v12.PodList, error) {
 	if KubeCli.Err != nil {
 		log.Error().Msgf("Kubernetes client has error:%s", KubeCli.Err)
 		return nil, KubeCli.Err

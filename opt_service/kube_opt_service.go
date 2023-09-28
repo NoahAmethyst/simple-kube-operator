@@ -22,13 +22,13 @@ func (s KubeOptServer) Namespaces(ctx context.Context, req *kube_opt_pb.KubeOptR
 	return
 }
 
-func (s KubeOptServer) GetPods(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+func (s KubeOptServer) Pods(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
 	resp = new(kube_opt_pb.KubeOptResp)
 	if len(req.Namespace) == 0 {
 		req.Namespace = constant.Default
 	}
 
-	if list, err := operator.GetPods(ctx, req); err != nil {
+	if list, err := operator.Pods(ctx, req); err != nil {
 		resp.Code = constant.Failed
 		resp.Message = err.Error()
 	} else {
@@ -44,11 +44,67 @@ func (s KubeOptServer) GetPods(ctx context.Context, req *kube_opt_pb.KubeOptReq)
 	return
 }
 
-func (s KubeOptServer) GetServices(_ context.Context, _ *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+func (s KubeOptServer) Services(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+
+	resp = new(kube_opt_pb.KubeOptResp)
+	if len(req.Namespace) == 0 {
+		req.Namespace = constant.Default
+	}
+
+	if list, err := operator.Services(ctx, req); err != nil {
+		resp.Code = constant.Failed
+		resp.Message = err.Error()
+	} else {
+		for _, item := range list.Items {
+			ports := make([]*kube_opt_pb.Ports, 0, len(item.Spec.Ports))
+			for _, port := range item.Spec.Ports {
+				ports = append(ports, &kube_opt_pb.Ports{
+					Protocol: string(port.Protocol),
+					Port:     port.Port,
+					NodePort: port.NodePort,
+				})
+			}
+			resp.Services = append(resp.Services, &kube_opt_pb.KubeService{
+				Namespace:  item.Namespace,
+				Name:       item.ObjectMeta.Name,
+				PortType:   string(item.Spec.Type),
+				ClusterIps: item.Spec.ClusterIPs,
+				Ports:      ports,
+			})
+		}
+	}
 	return
 }
 
-func (s KubeOptServer) GetDeployments(_ context.Context, _ *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+func (s KubeOptServer) Deployments(ctx context.Context, req *kube_opt_pb.KubeOptReq) (resp *kube_opt_pb.KubeOptResp, err error) {
+	resp = new(kube_opt_pb.KubeOptResp)
+	if len(req.Namespace) == 0 {
+		req.Namespace = constant.Default
+	}
+
+	if list, err := operator.Deployments(ctx, req); err != nil {
+		resp.Code = constant.Failed
+		resp.Message = err.Error()
+	} else {
+		for _, item := range list.Items {
+			var replicas int32
+			if item.Spec.Replicas != nil {
+				replicas = *item.Spec.Replicas
+			}
+
+			imagePullSecrets := make([]string, 0, len(item.Spec.Template.Spec.ImagePullSecrets))
+			for _, secret := range item.Spec.Template.Spec.ImagePullSecrets {
+				imagePullSecrets = append(imagePullSecrets, secret.Name)
+			}
+			resp.Deployments = append(resp.Deployments, &kube_opt_pb.KubeDeployment{
+				Namespace:        item.Namespace,
+				Name:             item.Name,
+				Replicas:         replicas,
+				Labels:           item.Labels,
+				ImagePullSecrets: imagePullSecrets,
+			})
+		}
+	}
 	return
 }
 

@@ -8,8 +8,8 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// GetServices Get kubernetes services with namespace specified.
-func GetServices(ctx context.Context, req *kube_opt_pb.KubeOptReq) (*v12.ServiceList, error) {
+// Services Get kubernetes services with namespace specified.
+func Services(ctx context.Context, req *kube_opt_pb.KubeOptReq) (*v12.ServiceList, error) {
 	if KubeCli.Err != nil {
 		log.Error().Msgf("Kubernetes client has error:%s", KubeCli.Err)
 		return nil, KubeCli.Err

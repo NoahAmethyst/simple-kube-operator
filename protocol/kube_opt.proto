@@ -8,11 +8,11 @@ service KubeOptService {
 
   rpc Namespaces(KubeOptReq) returns(KubeOptResp){}
 
-  rpc GetPods(KubeOptReq) returns (KubeOptResp){}
+  rpc Pods(KubeOptReq) returns (KubeOptResp){}
 
-  rpc GetServices(KubeOptReq) returns(KubeOptResp){}
+  rpc Services(KubeOptReq) returns(KubeOptResp){}
 
-  rpc GetDeployments(KubeOptReq) returns(KubeOptResp){}
+  rpc Deployments(KubeOptReq) returns(KubeOptResp){}
 
   rpc DeletePod(KubeOptReq) returns(KubeOptResp){}
 
@@ -29,7 +29,9 @@ message KubeOptResp{
   uint64 code = 1;
   string message = 2;
   repeated KubePod pods = 3;
-  repeated KubeNamespace namespaces = 4;
+  repeated KubeService services = 4;
+  repeated KubeNamespace namespaces = 5;
+  repeated KubeDeployment deployments = 6;
 }
 
 message KubePod{
@@ -37,6 +39,30 @@ message KubePod{
   string app = 2;
   string podId = 3;
   string status = 4;
+}
+
+message KubeService{
+  string namespace = 1;
+  string name = 2;
+  string portType = 3;
+  repeated string clusterIps = 4;
+  repeated Ports ports = 5;
+}
+
+message KubeDeployment{
+  string namespace = 1;
+  string name = 2;
+  int32 replicas = 3;
+  map<string, string> labels = 4;
+  repeated string imagePullSecrets = 5;
+
+
+}
+
+message Ports{
+  string protocol = 1;
+  int32 port = 2;
+  int32 nodePort = 3;
 }
 
 message KubeNamespace{

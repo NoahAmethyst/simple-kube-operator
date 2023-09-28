@@ -73,3 +73,29 @@ func Test_Namespaces(t *testing.T) {
 		t.Logf("%+v", _namespace)
 	}
 }
+
+func Test_GetServices(t *testing.T) {
+	conn, err := grpc.Dial(addr, grpc.WithKeepaliveParams(keepAliveCfg), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		panic(err)
+	}
+
+	kubeOptCli := kube_opt_pb.NewKubeOptServiceClient(conn)
+
+	defer func(conn *grpc.ClientConn) {
+		if err := conn.Close(); err != nil {
+			t.Error(err)
+		}
+	}(conn)
+	resp, err := kubeOptCli.GetServices(ctx, &kube_opt_pb.KubeOptReq{})
+	if err != nil {
+		panic(err)
+	}
+	if len(resp.Message) != 0 {
+		panic(resp.Message)
+	}
+
+	for _, service := range resp.Services {
+		t.Logf("%+v", service)
+	}
+}
