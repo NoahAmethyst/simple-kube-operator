@@ -28,7 +28,7 @@ func StartServer(grpcPort string) {
 		grpcPort = strconv.Itoa(constant.DefaultGRPCPort)
 	}
 
-	grpcAddr := fmt.Sprintf("127.0.0.1:%s", grpcPort)
+	grpcAddr := fmt.Sprintf("0.0.0.0:%s", grpcPort)
 	lis, err := net.Listen("tcp", grpcAddr)
 
 	if len(grpcPort) > 0 {
