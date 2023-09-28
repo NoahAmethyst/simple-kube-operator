@@ -35,7 +35,9 @@ func init() {
 
 	// Use insecure for remote call
 	// If you need reset client config use ResetCli
-	cfg.Insecure = true
+	if len(os.Getenv(constant.InSecure)) > 0 {
+		cfg.Insecure = true
+	}
 
 	if k8sClient, err := kubernetes.NewForConfig(cfg); err != nil {
 		KubeCli.Err = err

@@ -11,4 +11,6 @@ const (
 
 	K8sMasterUrl  = "K8S_MASTER_URL"
 	K8sConfigFile = "K8S_CONFIG_FILE"
+
+	InSecure = "INSECURE"
 )
