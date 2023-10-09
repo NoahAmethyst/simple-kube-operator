@@ -3,9 +3,9 @@ name: Docker Image CI
 on:
   push:
     branches: [ "master" ]
-    paths:
-      - '!README.md'
-      - '!kube_operator.yml'
+    paths-ignore:
+      - 'README.md'
+      - 'kube_operator.yml'
   pull_request:
     branches: [ "master" ]
 
