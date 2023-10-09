@@ -1,0 +1,71 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-operator
+  annotations:
+    update-timestamp: "2"
+  labels:
+    app: kube-operator
+spec:
+  selector:
+    matchLabels:
+      app: kube-operator
+  replicas: 1
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: kube-operator
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - image: registry.cn-hangzhou.aliyuncs.com/lexmargin/kube-operator:latest
+          name: kube-operator
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          env:
+            # Grpc listen port
+            - name: GRPC_LISTEN_PORT
+              value: "9090"
+              # Kubernetes master url
+            - name: K8S_MASTER_URL
+              value: ""
+            # Kubernetes config file
+            - name: K8S_CONFIG_FILE
+              value: "/root/config"
+            #              subPath: config.yml
+            - name: INSECURE
+              value: ""
+          volumeMounts:
+            - mountPath: /root/config
+              name: config-path
+      volumes:
+        - name: config-path
+          hostPath:
+            path: /root/.kube/config
+            type: File
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-operator
+  labels:
+    app: kube-operator
+spec:
+  selector:
+    app: kube-operator
+  ports:
+    - name: kube-operator-port
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+      nodePort: 30090
+  type: NodePort

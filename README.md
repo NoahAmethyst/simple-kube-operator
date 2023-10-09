@@ -6,8 +6,9 @@
 
 * Server with grpc
 
-### Set environment
+## Use
 
+### Directly
 ```shell
 # Your GRPC server port
 # Default is 9090 if not set
@@ -21,8 +22,23 @@ export K8S_MASTER_URL=
 # Default is '/etc/kubernetes/admin.conf'
 export K8S_CONFIG_FILE=
 
+go build -o kube-operator
+
+./kube-operator
+```
+### By docker
+
+```shell
+# Please make sure your Kubernetes configuration file is mounted in the specified directory. 
+# The default directory can be found in [Directly format]
+# And you can also customize it by adjusting the environment variables of the Docker container.
+docker run --name msr_http kube-operator -d registry.cn-hangzhou.aliyuncs.com/lexmargin/kube-operator:latest
+
 ```
 
-### How to use
+### By Kubernetes
+```shell
+# You may want to adjust the env value or node port by your self
+kubectl apply -f https://github.com/NoahAmethyst/simple-kube-operator/blob/master/kube_operator.yml
+```
 
-* You can see example code in gotest directory
