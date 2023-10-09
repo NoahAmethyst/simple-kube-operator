@@ -5,6 +5,11 @@
 *I'm happy if you contribute to this repo*
 
 * Server with grpc
+* Get all namespaces
+* Get all pods with specific namespace
+* Get all services with specific namespace
+* Get all deployments with specific namespace
+* Delete specific pod
 
 ## Use
 
