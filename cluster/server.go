@@ -3,6 +3,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"github.com/NoahAmethyst/simple-kube-operator/cluster/middleware"
 	constant "github.com/NoahAmethyst/simple-kube-operator/constant"
 	"github.com/NoahAmethyst/simple-kube-operator/opt_service"
 	"github.com/NoahAmethyst/simple-kube-operator/protocol/pb/kube_opt_pb"
@@ -50,9 +51,11 @@ func StartServer(grpcPort string) {
 	// (e.g. logging) can operate on the recovered state instead of being directly affected by any panic
 
 	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(middleware.LoggerInterceptor),
 		grpc.ChainUnaryInterceptor(
 			grpc_recovery.UnaryServerInterceptor(opts...),
 			//otgrpc.OpenTracingServerInterceptor(thisTracer),
+
 		),
 		grpc.ChainStreamInterceptor(
 			grpc_recovery.StreamServerInterceptor(opts...),
