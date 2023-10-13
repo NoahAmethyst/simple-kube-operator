@@ -1,15 +1,20 @@
 # Simple Kubernetes Operator
 
-*This project only for personal use and study so it is very simple and not professional*.
+*This project only for personal use and study so it's not professional*.
 
 *I'm happy if you contribute to this repo.*
 
+*You can figure out how to use in [gotest](gotest)*
+
+#### Features
 * Server with grpc
 * Get all namespaces
 * Get all pods with specific namespace
 * Get all services with specific namespace
 * Get all deployments with specific namespace
 * Delete specific pod
+* Supports remote call.You should have kube config file at local first.Then set ENV[INSECURE] = [any value]
+
 
 ## Use
 
@@ -31,7 +36,7 @@ go build -o kube-operator
 
 ./kube-operator
 ```
-### By docker
+### Docker
 
 ```shell
 # Please make sure your Kubernetes configuration file is mounted in the specified directory. 
