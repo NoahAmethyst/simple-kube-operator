@@ -13,7 +13,6 @@
 * Get all services with specific namespace
 * Get all deployments with specific namespace
 * Delete specific pod
-* Supports remote call.You should have kube config file at local first.Then set ENV[INSECURE] = [any value]
 
 
 ## Use
