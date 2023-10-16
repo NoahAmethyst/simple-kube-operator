@@ -10,8 +10,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Operate Kubernetes
+      - name: Update Pod
         uses: NoahAmethyst/kuber-opt-action@v1.0.0
         with:
           server: ${{ secrets.GRPC_SERVER }}
