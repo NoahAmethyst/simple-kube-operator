@@ -6,6 +6,8 @@
 
 *You can figure out how to use in [gotest](gotest)*
 
+#### This project can  be coordinated with [this git action](https://github.com/NoahAmethyst/kuber-opt-action) 
+
 #### Features
 * Server with grpc
 * Get all namespaces
