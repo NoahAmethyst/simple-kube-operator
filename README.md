@@ -15,6 +15,7 @@
 * Get all services with specific namespace
 * Get all deployments with specific namespace
 * Delete specific pod
+* Event monitoring
 
 
 ## Use
