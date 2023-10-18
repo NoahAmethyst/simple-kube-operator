@@ -12,7 +12,7 @@ import (
 func init() {
 
 	zerolog.TimeFieldFormat = time.RFC3339Nano
-	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339})
 }
 

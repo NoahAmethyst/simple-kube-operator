@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/NoahAmethyst/simple-kube-operator/cluster"
 	"github.com/NoahAmethyst/simple-kube-operator/constant"
+	"github.com/NoahAmethyst/simple-kube-operator/operator"
 	"os"
 	"time"
 )
@@ -16,6 +17,6 @@ func main() {
 	ctx := context.Background()
 
 	gracefulShutdown(ctx, cluster.KubeOptServer)
-
+	operator.MonitoringPod(ctx)
 	cluster.StartServer(os.Getenv(constant.GrpcListenPort))
 }
