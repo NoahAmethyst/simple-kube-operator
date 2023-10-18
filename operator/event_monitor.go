@@ -75,7 +75,7 @@ func EventHandler(event watch.Event) {
 		case watch.Modified:
 			switch pod.Status.Phase {
 			// When event type is MODIFIED and status is Running,the pod is created successful and running.
-			case v1.PodPending:
+			case v1.PodRunning:
 				log.Info().Msgf(" App:%s  PodName:%s is created successful and running", pod.Labels["app"], pod.Name)
 			default:
 
