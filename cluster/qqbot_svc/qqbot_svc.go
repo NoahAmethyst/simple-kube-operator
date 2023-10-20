@@ -6,6 +6,5 @@ import (
 )
 
 func SvcCli() qqbot_pb.QQBotServiceClient {
-	conn := rpc.GetConn(rpc.CliQQBot)
-	return qqbot_pb.NewQQBotServiceClient(conn)
+	return qqbot_pb.NewQQBotServiceClient(rpc.GetConn(rpc.CliQQBot))
 }

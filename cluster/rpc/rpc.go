@@ -39,12 +39,10 @@ func InitGrpcCli(clientName GRPCClientName) {
 		log.Error().Msgf("Empty svc addr %s", string(clientName))
 	}
 
-	grpcConn, err := startConnection(addr)
-
-	if err != nil {
-		log.Error().Msgf("InitGrpcCli grpc client err %s", err.Error())
+	if grpcConn, err := startConnection(addr); err != nil {
+		log.Error().Msgf("Init grpc client [%s] err %s", err.Error())
 	} else {
-		log.Info().Msgf("InitGrpcCli grpc client success at %s", addr)
+		log.Info().Msgf("Init grpc client [%s] success at %s", clientName, addr)
 		setConn(clientName, grpcConn)
 	}
 }
