@@ -13,6 +13,11 @@ type QQNotifier struct {
 }
 
 func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error().Msgf("Call QQNotifier panic:%+v", err)
+		}
+	}()
 	q.svcCli = qqbot_svc.SvcCli()
 	selfResp, err := q.svcCli.Self(ctx, new(qqbot_pb.Empty), nil)
 	if err != nil {
