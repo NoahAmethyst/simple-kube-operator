@@ -16,6 +16,7 @@
 * Get all deployments with specific namespace
 * Delete specific pod
 * Event monitoring
+* Notifier when pod status changed.
 
 
 ## Use
