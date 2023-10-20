@@ -11,7 +11,28 @@ import (
 	"reflect"
 )
 
-func MonitoringPod(_ context.Context) {
+var existChan = make(chan struct{})
+
+// Restart watcher when it exists.
+func daemons(ctx context.Context) {
+	go func() {
+		for {
+			select {
+			case _, ok := <-existChan:
+				if ok {
+					log.Info().Msgf("Restart watcher.")
+					MonitoringPod(ctx)
+				} else {
+					log.Warn().Msgf("Closed existChan,watcher daemon process exist.")
+					return
+				}
+			}
+		}
+	}()
+
+}
+
+func MonitoringPod(ctx context.Context) {
 	if KubeCli.Err != nil {
 		log.Error().Msgf("Kubernetes client has error:%s", KubeCli.Err.Error())
 		return
@@ -27,8 +48,15 @@ func MonitoringPod(_ context.Context) {
 		return
 	}
 
-	go func(_watcher watch.Interface) {
-		exist := false
+	go func(_ctx context.Context, _watcher watch.Interface) {
+		defer func() {
+			log.Warn().Msgf("Exist event monitoring")
+			existChan <- struct{}{}
+		}()
+
+		// Start daemons to restart monitor when watcher closed.
+		daemons(_ctx)
+
 		for {
 			select {
 			case _event, ok := <-_watcher.ResultChan():
@@ -36,15 +64,11 @@ func MonitoringPod(_ context.Context) {
 					EventHandler(_event)
 				} else {
 					log.Warn().Msgf("Event watcher channel is closed")
-					exist = true
+					return
 				}
 			}
-			if exist {
-				break
-			}
 		}
-		log.Warn().Msgf("Exist event monitoring")
-	}(watcher)
+	}(ctx, watcher)
 }
 
 func EventHandler(event watch.Event) {
