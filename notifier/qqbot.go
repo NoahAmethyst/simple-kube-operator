@@ -9,7 +9,6 @@ import (
 )
 
 type QQNotifier struct {
-	svcCli qqbot_pb.QQBotServiceClient
 }
 
 func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified) {
@@ -18,8 +17,8 @@ func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified)
 			log.Error().Msgf("Call QQNotifier panic:%+v", err)
 		}
 	}()
-	q.svcCli = qqbot_svc.SvcCli()
-	selfResp, err := q.svcCli.Self(ctx, new(qqbot_pb.Empty), nil)
+	cli := qqbot_svc.SvcCli()
+	selfResp, err := cli.Self(ctx, new(qqbot_pb.Empty))
 	if err != nil {
 		log.Error().Msgf("Get qq bot info failed:%s", err.Error())
 		return
@@ -31,7 +30,7 @@ func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified)
 	if selfResp.GetSelf().GetOwner() > 0 {
 		text := q.generatePodModifiedContent(content)
 
-		if sendMsgResp, err := q.svcCli.SendMsg(ctx, &qqbot_pb.SendMsgReq{
+		if sendMsgResp, err := cli.SendMsg(ctx, &qqbot_pb.SendMsgReq{
 			Content: text,
 			Chat:    selfResp.GetSelf().GetOwner(),
 			Group:   false,
