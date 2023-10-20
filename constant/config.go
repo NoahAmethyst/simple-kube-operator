@@ -13,4 +13,6 @@ const (
 	K8sConfigFile = "K8S_CONFIG_FILE"
 
 	InSecure = "INSECURE"
+
+	NotifyAddr = "NOTIFY_ADDR"
 )

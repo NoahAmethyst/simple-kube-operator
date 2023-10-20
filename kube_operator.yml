@@ -44,6 +44,8 @@ spec:
             #              subPath: config.yml
             - name: INSECURE
               value: ""
+            - name: QQBOT_SERVICE_ADDR
+              value: "qq-bot:9090"
           volumeMounts:
             - mountPath: /root/config
               name: config-path

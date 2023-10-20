@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/NoahAmethyst/simple-kube-operator/cluster"
+	"github.com/NoahAmethyst/simple-kube-operator/cluster/rpc"
 	"github.com/NoahAmethyst/simple-kube-operator/constant"
 	"github.com/NoahAmethyst/simple-kube-operator/operator"
 	"os"
@@ -17,6 +18,14 @@ func main() {
 	ctx := context.Background()
 
 	gracefulShutdown(ctx, cluster.KubeOptServer)
+	// Start event watcher
 	operator.MonitoringPod(ctx)
+
+	// Initialize grpc client
+	for _, rpcCli := range rpc.RpcCliList {
+		rpc.InitGrpcCli(rpcCli)
+	}
+
+	// Start Grpc server
 	cluster.StartServer(os.Getenv(constant.GrpcListenPort))
 }
