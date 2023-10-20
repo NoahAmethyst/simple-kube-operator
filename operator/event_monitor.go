@@ -18,6 +18,7 @@ var once sync.Once
 
 // Restart watcher when it exists.
 func daemons(ctx context.Context) {
+	log.Info().Msgf("Start daemon of kubernetes events watcher")
 	go func() {
 		for {
 			select {
