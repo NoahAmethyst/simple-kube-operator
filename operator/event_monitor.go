@@ -9,9 +9,12 @@ import (
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/tools/cache"
 	"reflect"
+	"sync"
 )
 
 var existChan = make(chan struct{})
+
+var once sync.Once
 
 // Restart watcher when it exists.
 func daemons(ctx context.Context) {
@@ -55,7 +58,9 @@ func MonitoringPod(ctx context.Context) {
 		}()
 
 		// Start daemons to restart monitor when watcher closed.
-		daemons(_ctx)
+		once.Do(func() {
+			daemons(_ctx)
+		})
 
 		for {
 			select {
