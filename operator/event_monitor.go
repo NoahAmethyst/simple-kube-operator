@@ -14,6 +14,7 @@ import (
 )
 
 var existChan = make(chan struct{})
+var MonitorShutdown = make(chan struct{})
 
 var once sync.Once
 
@@ -71,8 +72,17 @@ func MonitoringPod(ctx context.Context) {
 					EventHandler(_event)
 				} else {
 					log.Warn().Msgf("Event watcher channel is closed")
+					// Release resource used by watcher.
+					_watcher.Stop()
 					return
 				}
+			case _, ok := <-MonitorShutdown:
+				if ok {
+					log.Info().Msgf("Graceful shutdown,release resource used by event watcher")
+					_watcher.Stop()
+					return
+				}
+
 			}
 		}
 	}(ctx, watcher)
