@@ -23,7 +23,7 @@ func gracefulShutdown(_ context.Context, server *grpc.Server) {
 		operator.MonitorShutdown <- struct{}{}
 
 		// Shut down grpc server
-		server.GracefulStop()
+		//server.GracefulStop()
 
 		log.Info().Msgf("graceful shutdown done")
 

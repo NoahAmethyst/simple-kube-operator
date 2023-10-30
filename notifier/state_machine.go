@@ -49,9 +49,9 @@ func (m *PodStateMachine) Start() {
 				select {
 				case newState := <-m.modify:
 					m.RLock()
+					podState.App = newState.App
+					podState.PodName = newState.PodName
 					if last, ok := m.lastState[newState.PodName]; ok {
-						podState.App = newState.App
-						podState.PodName = newState.PodName
 						switch last.State {
 						case PodCreating:
 							switch newState.State {
