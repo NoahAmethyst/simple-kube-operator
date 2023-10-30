@@ -48,6 +48,7 @@ func (m *PodStateMachine) Start() {
 				podState := PodState{}
 				select {
 				case newState := <-m.modify:
+					m.RLock()
 					if last, ok := m.lastState[newState.PodName]; ok {
 						podState.App = newState.App
 						podState.PodName = newState.PodName
@@ -64,7 +65,6 @@ func (m *PodStateMachine) Start() {
 							case PodDeleted:
 								podState.State = PodDeleted
 							}
-
 						}
 					} else {
 						switch newState.State {
@@ -73,8 +73,7 @@ func (m *PodStateMachine) Start() {
 							podState.State = PodDeleted
 						}
 					}
-
-					m.lastState[newState.PodName] = newState
+					m.RUnlock()
 
 				case <-m.stop:
 					close(m.modify)
@@ -84,6 +83,13 @@ func (m *PodStateMachine) Start() {
 
 				if podState.State != None {
 					NotifyPodModified(context.Background(), podState)
+					m.Lock()
+					if podState.State == PodDeleted {
+						delete(m.lastState, podState.PodName)
+					} else {
+						m.lastState[podState.PodName] = podState
+					}
+					m.Unlock()
 				}
 			}
 		}()
