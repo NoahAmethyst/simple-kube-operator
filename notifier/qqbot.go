@@ -29,6 +29,9 @@ func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodState) {
 
 	if selfResp.GetSelf().GetOwner() > 0 {
 		text := q.generatePodModifiedContent(content)
+		if len(text) == 0 {
+			return
+		}
 
 		if sendMsgResp, err := cli.SendMsg(ctx, &qqbot_pb.SendMsgReq{
 			Content: text,

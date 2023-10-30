@@ -53,7 +53,6 @@ func (m *PodStateMachine) Start() {
 					}
 					podState.App = newState.App
 					podState.PodName = newState.PodName
-					podState.State = newState.State
 					m.RLock()
 
 					if last, ok := m.lastState[newState.PodName]; ok {
@@ -76,6 +75,9 @@ func (m *PodStateMachine) Start() {
 						// Pod deleted.
 						case PodDeleted:
 							podState.State = PodDeleted
+						case PodCreating:
+							podState.State = PodCreating
+
 						}
 					}
 					m.RUnlock()
