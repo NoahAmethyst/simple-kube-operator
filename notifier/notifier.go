@@ -3,26 +3,20 @@ package notifier
 import "context"
 
 type Notifier interface {
-	notifyPodModified(context.Context, PodModified)
-	generatePodModifiedContent(PodModified) string
+	notifyPodModified(context.Context, PodState)
+	generatePodModifiedContent(PodState) string
 }
 
-type PodModifiedType int
+type State int
 
 const (
-	None PodModifiedType = iota
+	None State = iota
 	PodCreating
 	PodDeleted
 	PodCreated
 )
 
-type PodModified struct {
-	PodName string
-	App     string
-	Status  PodModifiedType
-}
-
-func NotifyPodModified(ctx context.Context, podModified PodModified) {
+func NotifyPodModified(ctx context.Context, podModified PodState) {
 	//Todo Automatic register notifier and use it
 	notifier := new(QQNotifier)
 

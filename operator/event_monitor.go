@@ -49,12 +49,17 @@ func MonitoringPod(ctx context.Context) {
 			Kind: "Pod",
 		},
 	})
+
 	if err != nil {
 		log.Error().Msgf("Make watcher failed:%s", err.Error())
 		return
 	}
 
-	go func(_ctx context.Context, _watcher watch.Interface) {
+	// Start pod state machine
+	stateMachine := notifier.NewStateMachine()
+	stateMachine.Start()
+
+	go func(_ctx context.Context, _watcher watch.Interface, _stateMachine *notifier.PodStateMachine) {
 		defer func() {
 			log.Warn().Msgf("Exist event monitoring")
 			existChan <- struct{}{}
@@ -69,7 +74,7 @@ func MonitoringPod(ctx context.Context) {
 			select {
 			case _event, ok := <-_watcher.ResultChan():
 				if ok {
-					EventHandler(_event)
+					EventHandler(_event, _stateMachine)
 				} else {
 					log.Warn().Msgf("Event watcher channel is closed")
 					// Release resource used by watcher.
@@ -85,19 +90,19 @@ func MonitoringPod(ctx context.Context) {
 
 			}
 		}
-	}(ctx, watcher)
+	}(ctx, watcher, stateMachine)
 }
 
-func EventHandler(event watch.Event) {
+func EventHandler(event watch.Event, machine *notifier.PodStateMachine) {
 	if pod, ok := event.Object.(*v1.Pod); !ok {
 		log.Warn().Msgf("event type [%s] not Pod", reflect.TypeOf(event.Object).Name())
 		return
 	} else {
 		log.Debug().Msgf("Event:%s  App:%s  PodName:%s  Status:%s", event.Type, pod.Labels["app"], pod.Name, pod.Status.Phase)
-		podModified := notifier.PodModified{
+		podState := notifier.PodState{
 			PodName: pod.Name,
 			App:     pod.Labels["app"],
-			Status:  notifier.None,
+			State:   notifier.None,
 		}
 		switch event.Type {
 
@@ -116,7 +121,7 @@ func EventHandler(event watch.Event) {
 			// When event type is DELETED and status is Succeeded,the pod is deleted.
 			case v1.PodSucceeded:
 				log.Info().Msgf(" App:%s  PodName:%s is deleted", pod.Labels["app"], pod.Name)
-				podModified.Status = notifier.PodDeleted
+				podState.State = notifier.PodDeleted
 			default:
 
 			}
@@ -126,17 +131,12 @@ func EventHandler(event watch.Event) {
 			// When event type is MODIFIED and status is Running,the pod is created successful and running.
 			case v1.PodRunning:
 				log.Info().Msgf(" App:%s  PodName:%s is created successful and running", pod.Labels["app"], pod.Name)
-				podModified.Status = notifier.PodCreated
+				podState.State = notifier.PodCreated
 			default:
 
 			}
 		}
-
-		//Notify
-		if podModified.Status != notifier.None {
-			notifier.NotifyPodModified(context.Background(), podModified)
-		}
-
+		machine.Modify(podState)
 	}
 
 }

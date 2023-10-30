@@ -11,7 +11,7 @@ import (
 type QQNotifier struct {
 }
 
-func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified) {
+func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodState) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Error().Msgf("Call QQNotifier panic:%+v", err)
@@ -44,9 +44,9 @@ func (q *QQNotifier) notifyPodModified(ctx context.Context, content PodModified)
 	}
 }
 
-func (q *QQNotifier) generatePodModifiedContent(content PodModified) string {
+func (q *QQNotifier) generatePodModifiedContent(content PodState) string {
 	var status string
-	switch content.Status {
+	switch content.State {
 	case PodDeleted:
 		status = "停止"
 	case PodCreated:
