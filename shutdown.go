@@ -11,7 +11,7 @@ import (
 )
 
 // gracefulShutdown waits for termination syscalls and doing clean up operations after received it
-func gracefulShutdown(_ context.Context, server *grpc.Server) {
+func gracefulShutdown(_ context.Context, _ *grpc.Server) {
 	signalChannel := make(chan os.Signal, 2)
 	signal.Notify(signalChannel, os.Interrupt, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGSTOP, syscall.SIGKILL, syscall.SIGHUP)
 	go func() {
