@@ -112,6 +112,7 @@ func EventHandler(event watch.Event, machine *notifier.PodStateMachine) {
 			// When event type is ADDED and status is Pending,the pod is under creating.
 			case v1.PodPending:
 				log.Info().Msgf(" App:%s  PodName:%s is under creating", pod.Labels["app"], pod.Name)
+				podState.State = notifier.PodCreating
 
 			default:
 
